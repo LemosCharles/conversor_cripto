@@ -1,409 +1,412 @@
-// ignore_for_file: prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, deprecated_member_use, sized_box_for_whitespace, avoid_print, unused_element, unnecessary_cast, unused_import, unused_local_variable, prefer_const_literals_to_create_immutables, duplicate_ignore, unrelated_type_equality_checks, unused_field, non_constant_identifier_names, await_only_futures, prefer_typing_uninitialized_variables
+// ignore_for_file: unused_import, prefer_final_fields, unused_field, prefer_const_constructors, use_key_in_widget_constructors, avoid_print, non_constant_identifier_names, unnecessary_cast, void_checks, prefer_typing_uninitialized_variables, unused_element, deprecated_member_use, sized_box_for_whitespace, unused_local_variable, unrelated_type_equality_checks, unnecessary_string_interpolations, unnecessary_null_comparison
 
+import 'package:conversor_moedas_flutter/models/result_cripto.dart';
+import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:another_flushbar/flushbar.dart';
-import 'package:conversor_moedas_flutter/models/result_cripto.dart';
-
-import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
-import 'package:flutter/material.dart';
-import 'package:share/share.dart';
-
-import 'package:conversor_moedas_flutter/models/result_cep.dart';
-import 'package:conversor_moedas_flutter/services/via_cep_service.dart';
+import 'dart:math';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+// --------- ÍNICIO SESSÃO DE DELCARAÇÕES --------------- //
+
+// variaveis de calculo
+double btc = 0;
+double ltc = 0;
+double ada = 0;
+double uni = 0;
+double usdc = 0;
+double reais = 0;
+
+// variables for request api
+String? Btc_last = '';
+String? Ltc_last = '';
+String? Ada_last = '';
+String? Uni_last = '';
+String? Usdc_last = '';
+String? Real_last = '';
+var resultCripto;
+
+// booleans
+bool _erro = true;
+bool _loading = false;
+bool _enableField = true;
+
+//controllers
+
+final btcController = TextEditingController();
+final ltcController = TextEditingController();
+final adaController = TextEditingController();
+final uniController = TextEditingController();
+final usdcController = TextEditingController();
+final realController = TextEditingController();
+
+// --------- FIM SESSÃO DE DELCARAÇÕES --------------- //
+
 class _HomePageState extends State<HomePage> {
-  // Declaração Bools
-  bool _loading = false;
-  bool _enableField = true;
-  bool _erro = true;
-
-  // Declaração Strings via CEP
-  String? _result;
-  String? _resultCripto;
-  String? status = 'Favor, informar o CEP';
-  String? cep = '';
-  String? logradouro = '';
-  String? complemento = '';
-  String? bairro = '';
-  String? localidade = '';
-  String? uf = '';
-  String? ibge = '';
-  String? gia = '';
-  String? ddd = '';
-  String? siafi = '';
-
-  // Declarações Strings via Criptos
-
-  String? Btc_buy;
-  String? Ltc_buy;
-  String? Ada_buy;
-  String? Uni_buy;
-  String? Usdc_buy;
-
-  // Declaração Finals
-  final formKey = GlobalKey<FormState>();
-  final List<Flushbar> flushBars = [];
-
-  // Var auxiliares
-  var titleSnackBar = '';
-  var massageSnackBar = '';
-  var comparar = '93900-000';
-  var _searchCepController = TextEditingController();
-
-  get child => null;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _searchCepController.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('CONVERSOR DE CRIPTO'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _buildSearchCepTextField(),
-            _buildSearchCepButton(),
-            _buildResultForm()
-          ],
+        appBar: AppBar(
+          title: Text('CONVERSOR CRIPTOO'),
         ),
+        //getData(),
+        body: SingleChildScrollView(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                buildTextField_btc("Valor (R\$)", "R\$ ", realController),
+                Divider(),
+                buildTextField_btc("Bitcoin", "", btcController),
+                Divider(),
+                buildTextField_ltc("LiteCoin", "", ltcController),
+                Divider(),
+                buildTextField_ada("Cardano", "", adaController),
+                Divider(),
+                buildTextField_uni("UniSwap", "", uniController),
+                Divider(),
+                buildTextField_usdc("UsdCoion", "", usdcController),
+                buildSearchCriptoButton(),
+                buildButtonLimparCampos(),
+                Divider(),
+              ],
+            )));
+  }
+}
+
+/////////////////////////////////////////////////////////////////////
+
+Future getData() async {
+  // Chama cripto BTC
+  resultCripto = await ViaCriptoService.fetchCripto('BTC');
+  Btc_last = resultCripto.ticker.last;
+  print('PREÇO BTC: $Btc_last');
+
+  // Chama cripto LTC
+  resultCripto = await ViaCriptoService.fetchCripto('LTC');
+  Ltc_last = resultCripto.ticker.buy;
+  print('PREÇO LTC: $Ltc_last');
+
+  // Chama cripto ADA
+  resultCripto = await ViaCriptoService.fetchCripto('ADA');
+  Ada_last = resultCripto.ticker.buy;
+  print('PREÇO ADA: $Ada_last');
+
+  // Chama cripto UNI
+  resultCripto = await ViaCriptoService.fetchCripto('UNI');
+  Uni_last = resultCripto.ticker.buy;
+  print('PREÇO UNI: $Uni_last');
+
+  // Chama cripto USDC
+  resultCripto = await ViaCriptoService.fetchCripto('USDC');
+  Usdc_last = resultCripto.ticker.buy;
+  print('PREÇO USDC: $Usdc_last');
+
+  String? S_btc = btcController.text;
+  String? S_ltc = ltcController.text;
+  String? S_ada = adaController.text;
+  String? S_uni = uniController.text;
+  String? S_usdc = usdcController.text;
+  String? S_reais = realController.text;
+
+  if (S_reais.isEmpty) {
+    reais = 0;
+  } else {
+    reais = double.parse('$S_reais');
+  }
+
+  btc = double.parse('$Btc_last');
+  ltc = double.parse('$Ltc_last');
+  ada = double.parse('$Ada_last');
+  uni = double.parse('$Uni_last');
+  usdc = double.parse('$Usdc_last');
+
+  if (S_btc.isNotEmpty &&
+      S_ltc.isEmpty &&
+      S_ada.isEmpty &&
+      S_uni.isEmpty &&
+      S_usdc.isEmpty &&
+      S_reais.isEmpty) {
+    _btcChanged(btc);
+  } else if (S_btc.isEmpty &&
+      S_ltc.isNotEmpty &&
+      S_ada.isEmpty &&
+      S_uni.isEmpty &&
+      S_usdc.isEmpty &&
+      S_reais.isEmpty) {
+    _ltcChanged(ltc);
+  } else if (S_btc.isEmpty &&
+      S_ltc.isEmpty &&
+      S_ada.isNotEmpty &&
+      S_uni.isEmpty &&
+      S_usdc.isEmpty &&
+      S_reais.isEmpty) {
+    _adaChanged(ada);
+  } else if (S_btc.isEmpty &&
+      S_ltc.isEmpty &&
+      S_ada.isEmpty &&
+      S_uni.isNotEmpty &&
+      S_usdc.isEmpty &&
+      S_reais.isEmpty) {
+    _uniChanged(uni);
+  } else if (S_btc.isEmpty &&
+      S_ltc.isEmpty &&
+      S_ada.isEmpty &&
+      S_uni.isEmpty &&
+      S_usdc.isNotEmpty &&
+      S_reais.isEmpty) {
+    _usdcChanged(usdc);
+  } else if (S_btc.isEmpty &&
+      S_ltc.isEmpty &&
+      S_ada.isEmpty &&
+      S_uni.isEmpty &&
+      S_usdc.isEmpty &&
+      S_reais.isNotEmpty) {
+    _realChanged(reais);
+  } else {
+    _clearAll();
+  }
+}
+
+void _realChanged(double valor) {
+  print('ENTROU NO REAL CHANGE');
+
+  double _real = valor;
+  btcController.text = (_real / btc).toStringAsFixed(6);
+  adaController.text = (_real / ada).toStringAsFixed(6);
+  ltcController.text = (_real / ltc).toStringAsFixed(6);
+  uniController.text = (_real / uni).toStringAsFixed(6);
+  usdcController.text = (_real / usdc).toStringAsFixed(6);
+}
+
+void _btcChanged(double cripto) {
+  print('ENTROU NO BTC CHANGE');
+
+  double _btc = cripto;
+
+  ltcController.text = ((_btc * btc) / ltc).toStringAsFixed(6);
+  adaController.text = ((_btc * btc) / ada).toStringAsFixed(6);
+  uniController.text = ((_btc * btc) / uni).toStringAsFixed(6);
+  usdcController.text = ((_btc * btc) / usdc).toStringAsFixed(6);
+  realController.text = (_btc * btc).toStringAsFixed(2);
+}
+
+void _ltcChanged(double cripto) {
+  print('ENTROU NO LTC CHANGE');
+
+  double _ltc = cripto;
+  ltcController.text = (_ltc * btc / ltc).toStringAsFixed(6);
+  adaController.text = (_ltc * btc / ada).toStringAsFixed(6);
+  uniController.text = (_ltc * btc / uni).toStringAsFixed(6);
+  usdcController.text = (_ltc * btc / usdc).toStringAsFixed(6);
+  realController.text = (_ltc * btc).toStringAsFixed(2);
+}
+
+void _adaChanged(double cripto) {
+  print('ENTROU NO ADA CHANGE');
+
+  double _ada = cripto;
+  ltcController.text = (_ada * btc / ltc).toStringAsFixed(6);
+  adaController.text = (_ada * btc / ada).toStringAsFixed(6);
+  uniController.text = (_ada * btc / uni).toStringAsFixed(6);
+  usdcController.text = (_ada * btc / usdc).toStringAsFixed(6);
+  realController.text = (_ada * btc).toStringAsFixed(2);
+}
+
+void _uniChanged(double cripto) {
+  print('ENTROU NO UNI CHANGE');
+
+  double _uni = cripto;
+  ltcController.text = (_uni * btc / ltc).toStringAsFixed(6);
+  adaController.text = (_uni * btc / ada).toStringAsFixed(6);
+  uniController.text = (_uni * btc / uni).toStringAsFixed(6);
+  usdcController.text = (_uni * btc / usdc).toStringAsFixed(6);
+  realController.text = (_uni * btc).toStringAsFixed(2);
+}
+
+void _usdcChanged(double cripto) {
+  print('ENTROU NO USDC CHANGE');
+
+  double _usdc = cripto;
+  ltcController.text = (_usdc * btc / ltc).toStringAsFixed(6);
+  adaController.text = (_usdc * btc / ada).toStringAsFixed(6);
+  uniController.text = (_usdc * btc / uni).toStringAsFixed(6);
+  usdcController.text = (_usdc * btc / usdc).toStringAsFixed(6);
+  realController.text = (_usdc * btc).toStringAsFixed(2);
+}
+
+void _clearAll() {
+  btcController.text = "";
+  ltcController.text = "";
+  adaController.text = "";
+  uniController.text = "";
+  usdcController.text = "";
+  realController.text = "";
+}
+
+Widget buildSearchCriptoButton() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 30.0),
+    child: RaisedButton(
+      onPressed: getData,
+      child: _loading
+          ? circularLoading()
+          : Text(
+              'CONVERTER CRIPTOS',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      color: Colors.amberAccent,
+    ),
+  );
+}
+
+Widget buildButtonLimparCampos() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 30.0),
+    child: RaisedButton(
+      onPressed: _clearAll,
+      child: _loading
+          ? circularLoading()
+          : Text(
+              'LIMPAR CAMPOS',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      color: Colors.red,
+    ),
+  );
+}
+
+Widget circularLoading() {
+  return Container(
+    height: 15.0,
+    width: 15.0,
+    child: CircularProgressIndicator(),
+  );
+}
+
+Widget buildTextField_reais(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+      prefixStyle: TextStyle(
+        color: Colors.amber,
+        fontSize: 25.0,
       ),
-    );
-  }
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
 
-  ///////////////////////////////////////////////////////////////////////
+Widget buildTextField_btc(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
 
-  Widget _buildSearchCepTextField() {
-    return TextField(
-      autofocus: true,
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.done,
-      decoration: InputDecoration(labelText: 'Informe o Cep'),
-      controller: _searchCepController,
-      enabled: _enableField,
-    );
-  }
+Widget buildTextField_ltc(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
 
-  Widget _buildSearchCepButton() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 30.0),
-      child: RaisedButton(
-        onPressed: _searchCep,
-        child: _loading
-            ? _circularLoading()
-            : Text(
-                'Consultar',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      ),
-    );
-  }
+Widget buildTextField_ada(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
 
-  Widget _circularLoading() {
-    return Container(
-      height: 15.0,
-      width: 15.0,
-      child: CircularProgressIndicator(),
-    );
-  }
+Widget buildTextField_uni(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
+}
 
-  Widget _buildResultForm() {
-    return Card(
-      elevation: 3,
-      margin: const EdgeInsets.all(15),
-      child: InkWell(
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(25),
-          child: Row(
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.share,
-                  color: Colors.blueGrey,
-                ),
-                onPressed: () {
-                  _share(context);
-                },
-              ),
-
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                // ignore: prefer_const_literals_to_create_immutables
-                children: [
-                  Text(
-                    '$status',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '               ',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '$logradouro',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$complemento',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$bairro',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$localidade',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$uf',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$ddd',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  Text(
-                    '$ibge',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
-              Spacer(),
-              //Icon(
-              //  Icons.arrow_forward_ios_outlined,
-              //  size: 15,
-              //  color: Colors.green,
-              //),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future _searchCep() async {
-    // Variaveis de apoio
-    var cep = _searchCepController.text;
-
-    /********************************************************/
-
-    var cripto = '';
-    var resultCripto;
-
-    // Chama cripto BTC
-    cripto = 'BTC';
-    resultCripto = await ViaCriptoService.fetchCripto(cripto);
-    Btc_buy = resultCripto.ticker.buy;
-    print('PREÇO BTC: $Btc_buy');
-
-    // Chama cripto LTC
-    cripto = 'LTC';
-    resultCripto = await ViaCriptoService.fetchCripto(cripto);
-    Ltc_buy = resultCripto.ticker.buy;
-    print('PREÇO LTC: $Ltc_buy');
-
-    // Chama cripto ADA
-    cripto = 'ADA';
-    resultCripto = await ViaCriptoService.fetchCripto(cripto);
-    Ada_buy = resultCripto.ticker.buy;
-    print('PREÇO ADA: $Ada_buy');
-
-    // Chama cripto UNI
-    cripto = 'UNI';
-    resultCripto = await ViaCriptoService.fetchCripto(cripto);
-    Uni_buy = resultCripto.ticker.buy;
-    print('PREÇO UNI: $Uni_buy');
-
-    // Chama cripto USDC
-    cripto = 'USDC';
-    resultCripto = await ViaCriptoService.fetchCripto(cripto);
-    Usdc_buy = resultCripto.ticker.buy;
-    print('PREÇO USDC: $Usdc_buy');
-
-    /********************************************************/
-
-    // Validações
-    if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
-      if (cep.length > 8 || cep.length < 8) {
-        _erro = true;
-        titleSnackBar = 'Atenção!';
-        massageSnackBar = 'Quantidade de caracter incorreto.';
-        showTopSnackBar(context);
-      }
-
-      if (cep.isEmpty || cep == '') {
-        _erro = true;
-        titleSnackBar = 'Atenção!';
-        massageSnackBar = 'Campo em branco. Favor, informe o CEP para busca.';
-        showTopSnackBar(context);
-      }
-
-      status = '';
-      cep = '';
-      logradouro = '';
-      complemento = '';
-      bairro = '';
-      localidade = '';
-      uf = '';
-      ibge = '';
-      gia = '';
-      ddd = '';
-      siafi = '';
-      //
-    } else {
-      //
-      _searching(true);
-
-      final resultCep = await ViaCepService.fetchCep(cep: cep);
-      _result = resultCep.toJson() as String?;
-
-      setState(() {
-        // Valida retorno do JSON
-
-        if (resultCep.cep == comparar) {
-          _erro = true;
-          titleSnackBar = 'Atenção!';
-          massageSnackBar = 'CEP inexistente!';
-          showTopSnackBar(context);
-
-          status = '';
-          cep = '';
-          logradouro = '';
-          complemento = '';
-          bairro = '';
-          localidade = '';
-          uf = '';
-          ibge = '';
-          gia = '';
-          ddd = '';
-          siafi = '';
-        } else {
-          _erro = false;
-          titleSnackBar = 'LEGAL!';
-          massageSnackBar = 'Busca realizada com sucesso.';
-          showTopSnackBar(context);
-          status = 'Resultado da busca';
-          cep = resultCep.cep;
-          logradouro = resultCep.logradouro;
-          complemento = resultCep.complemento;
-          bairro = resultCep.bairro;
-          localidade = resultCep.localidade;
-          uf = resultCep.uf;
-          ibge = resultCep.ibge;
-          gia = resultCep.gia;
-          ddd = resultCep.ddd;
-          siafi = resultCep.siafi;
-        }
-      });
-    }
-
-    _searching(false);
-    //
-  }
-
-  void _searching(bool enable) {
-    setState(() {
-      _result = enable ? '' : _result;
-      _loading = enable;
-      _enableField = !enable;
-    });
-  }
-
-  void showTopSnackBar(BuildContext context) => show(
-        context,
-        Flushbar(
-          icon: Icon(
-            Icons.error,
-            size: 40,
-            color: Colors.red,
-          ),
-
-          shouldIconPulse: false,
-          title: titleSnackBar,
-          message: massageSnackBar,
-
-          onTap: (_) {
-            print('Clicked bar');
-          },
-          duration: Duration(seconds: 3),
-          flushbarPosition: FlushbarPosition.TOP,
-          margin: EdgeInsets.fromLTRB(8, kToolbarHeight + 8, 8, 0),
-          //borderRadius: 16,
-        ),
-      );
-
-  Future show(BuildContext context, Flushbar newFlushBar) async {
-    await Future.wait(flushBars.map((flushBar) => flushBar.dismiss()).toList());
-    flushBars.clear();
-
-    newFlushBar.show(context);
-    flushBars.add(newFlushBar);
-  }
-
-  void _share(BuildContext context) {
-    dynamic cep;
-
-    if (_erro == true) {
-      titleSnackBar = 'Atenção!';
-      massageSnackBar = 'Não é possível compartilhar um CEP inválido.';
-      showTopSnackBar(context);
-    } else if (_result != '') {
-      cep = ResultCep.fromJson(_result!);
-      Share.share(
-        "cep: ${cep.cep}, Logradouro: ${cep.logradouro}, Complemento: ${cep.complemento},"
-        "Bairro: ${cep.bairro}, Cidade: ${cep.localidade}, Uf: ${cep.uf}, Ibge: ${cep.ibge},"
-        "Gia: ${cep.gia}, DDD: ${cep.ddd}, Siafi: ${cep.siafi}.",
-      );
-    }
-  }
+Widget buildTextField_usdc(
+    String label, String prefix, TextEditingController c) {
+  return TextField(
+    controller: c,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      color: Colors.amber,
+      fontSize: 25.0,
+    ),
+    keyboardType: TextInputType.number,
+  );
 }

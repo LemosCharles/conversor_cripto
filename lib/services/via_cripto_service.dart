@@ -6,7 +6,6 @@ import 'dart:ffi';
 
 import 'package:conversor_moedas_flutter/models/result_cripto.dart';
 import 'package:http/http.dart' as http;
-import 'package:conversor_moedas_flutter/models/result_cep.dart';
 
 class ViaCriptoService {
   static Future<ResultCripto> fetchCripto(String cripto) async {

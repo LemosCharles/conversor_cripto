@@ -24,6 +24,13 @@ double uni = 0;
 double usdc = 0;
 double reais = 0;
 
+double D_btc = 0;
+double D_ltc = 0;
+double D_ada = 0;
+double D_uni = 0;
+double D_usdc = 0;
+double D_reais = 0;
+
 // variables for request api
 String? Btc_last = '';
 String? Ltc_last = '';
@@ -31,21 +38,28 @@ String? Ada_last = '';
 String? Uni_last = '';
 String? Usdc_last = '';
 String? Real_last = '';
-var resultCripto;
+String? S_btc = '';
+String? S_ltc = '';
+String? S_ada = '';
+String? S_uni = '';
+String? S_usdc = '';
+String? S_reais = '';
 
 // booleans
 bool _erro = true;
 bool _loading = false;
 bool _enableField = true;
 
-//controllers
-
+// controllers
 final btcController = TextEditingController();
 final ltcController = TextEditingController();
 final adaController = TextEditingController();
 final uniController = TextEditingController();
 final usdcController = TextEditingController();
 final realController = TextEditingController();
+
+// aux para api
+var resultCripto;
 
 // --------- FIM SESSÃO DE DELCARAÇÕES --------------- //
 
@@ -62,17 +76,18 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                buildTextField_btc("Valor (R\$)", "R\$ ", realController),
+                buildTextField("Valor (R\$)", "R\$ ", realController),
                 Divider(),
-                buildTextField_btc("Bitcoin", "", btcController),
+                buildTextField("Bitcoin", "", btcController),
                 Divider(),
-                buildTextField_ltc("LiteCoin", "", ltcController),
+                buildTextField("LiteCoin", "", ltcController),
                 Divider(),
-                buildTextField_ada("Cardano", "", adaController),
+                buildTextField("Cardano", "", adaController),
                 Divider(),
-                buildTextField_uni("UniSwap", "", uniController),
+                buildTextField("UniSwap", "", uniController),
                 Divider(),
-                buildTextField_usdc("UsdCoion", "", usdcController),
+                buildTextField("UsdCoion", "", usdcController),
+                // Botões
                 buildSearchCriptoButton(),
                 buildButtonLimparCampos(),
                 Divider(),
@@ -109,18 +124,12 @@ Future getData() async {
   Usdc_last = resultCripto.ticker.buy;
   print('PREÇO USDC: $Usdc_last');
 
-  String? S_btc = btcController.text;
-  String? S_ltc = ltcController.text;
-  String? S_ada = adaController.text;
-  String? S_uni = uniController.text;
-  String? S_usdc = usdcController.text;
-  String? S_reais = realController.text;
-
-  if (S_reais.isEmpty) {
-    reais = 0;
-  } else {
-    reais = double.parse('$S_reais');
-  }
+  S_btc = btcController.text;
+  S_ltc = ltcController.text;
+  S_ada = adaController.text;
+  S_uni = uniController.text;
+  S_usdc = usdcController.text;
+  S_reais = realController.text;
 
   btc = double.parse('$Btc_last');
   ltc = double.parse('$Ltc_last');
@@ -128,48 +137,84 @@ Future getData() async {
   uni = double.parse('$Uni_last');
   usdc = double.parse('$Usdc_last');
 
-  if (S_btc.isNotEmpty &&
-      S_ltc.isEmpty &&
-      S_ada.isEmpty &&
-      S_uni.isEmpty &&
-      S_usdc.isEmpty &&
-      S_reais.isEmpty) {
-    _btcChanged(btc);
-  } else if (S_btc.isEmpty &&
-      S_ltc.isNotEmpty &&
-      S_ada.isEmpty &&
-      S_uni.isEmpty &&
-      S_usdc.isEmpty &&
-      S_reais.isEmpty) {
-    _ltcChanged(ltc);
-  } else if (S_btc.isEmpty &&
-      S_ltc.isEmpty &&
-      S_ada.isNotEmpty &&
-      S_uni.isEmpty &&
-      S_usdc.isEmpty &&
-      S_reais.isEmpty) {
-    _adaChanged(ada);
-  } else if (S_btc.isEmpty &&
-      S_ltc.isEmpty &&
-      S_ada.isEmpty &&
-      S_uni.isNotEmpty &&
-      S_usdc.isEmpty &&
-      S_reais.isEmpty) {
-    _uniChanged(uni);
-  } else if (S_btc.isEmpty &&
-      S_ltc.isEmpty &&
-      S_ada.isEmpty &&
-      S_uni.isEmpty &&
-      S_usdc.isNotEmpty &&
-      S_reais.isEmpty) {
-    _usdcChanged(usdc);
-  } else if (S_btc.isEmpty &&
-      S_ltc.isEmpty &&
-      S_ada.isEmpty &&
-      S_uni.isEmpty &&
-      S_usdc.isEmpty &&
-      S_reais.isNotEmpty) {
-    _realChanged(reais);
+  if (S_reais!.isEmpty) {
+    D_reais = 0;
+  } else {
+    D_reais = double.parse('$S_reais');
+  }
+
+  if (S_btc!.isEmpty) {
+    D_btc = 0;
+  } else {
+    D_btc = double.parse('$S_btc');
+  }
+
+  if (S_ltc!.isEmpty) {
+    D_ltc = 0;
+  } else {
+    D_ltc = double.parse('$S_ltc');
+  }
+
+  if (S_uni!.isEmpty) {
+    D_uni = 0;
+  } else {
+    D_uni = double.parse('$S_uni');
+  }
+
+  if (S_ada!.isEmpty) {
+    D_ada = 0;
+  } else {
+    D_ada = double.parse('$S_ada');
+  }
+
+  if (S_usdc!.isEmpty) {
+    D_usdc = 0;
+  } else {
+    D_usdc = double.parse('$S_usdc');
+  }
+
+  if (S_btc!.isNotEmpty &&
+      S_ltc!.isEmpty &&
+      S_ada!.isEmpty &&
+      S_uni!.isEmpty &&
+      S_usdc!.isEmpty &&
+      S_reais!.isEmpty) {
+    _btcChanged(D_btc);
+  } else if (S_btc!.isEmpty &&
+      S_ltc!.isNotEmpty &&
+      S_ada!.isEmpty &&
+      S_uni!.isEmpty &&
+      S_usdc!.isEmpty &&
+      S_reais!.isEmpty) {
+    _ltcChanged(D_ltc);
+  } else if (S_btc!.isEmpty &&
+      S_ltc!.isEmpty &&
+      S_ada!.isNotEmpty &&
+      S_uni!.isEmpty &&
+      S_usdc!.isEmpty &&
+      S_reais!.isEmpty) {
+    _adaChanged(D_ada);
+  } else if (S_btc!.isEmpty &&
+      S_ltc!.isEmpty &&
+      S_ada!.isEmpty &&
+      S_uni!.isNotEmpty &&
+      S_usdc!.isEmpty &&
+      S_reais!.isEmpty) {
+    _uniChanged(D_uni);
+  } else if (S_btc!.isEmpty &&
+      S_ltc!.isEmpty &&
+      S_ada!.isEmpty &&
+      S_uni!.isEmpty &&
+      S_usdc!.isNotEmpty &&
+      S_reais!.isEmpty) {
+    _usdcChanged(D_usdc);
+  } else if (S_btc!.isEmpty &&
+      S_ltc!.isEmpty &&
+      S_ada!.isEmpty &&
+      S_uni!.isEmpty &&
+      S_usdc!.isEmpty &&
+      S_reais!.isNotEmpty) {
+    _realChanged(D_reais);
   } else {
     _clearAll();
   }
@@ -180,10 +225,10 @@ void _realChanged(double valor) {
 
   double _real = valor;
   btcController.text = (_real / btc).toStringAsFixed(6);
-  adaController.text = (_real / ada).toStringAsFixed(6);
   ltcController.text = (_real / ltc).toStringAsFixed(6);
-  uniController.text = (_real / uni).toStringAsFixed(6);
-  usdcController.text = (_real / usdc).toStringAsFixed(6);
+  adaController.text = (_real / ada).toStringAsFixed(3);
+  uniController.text = (_real / uni).toStringAsFixed(3);
+  usdcController.text = (_real / usdc).toStringAsFixed(3);
 }
 
 void _btcChanged(double cripto) {
@@ -202,44 +247,44 @@ void _ltcChanged(double cripto) {
   print('ENTROU NO LTC CHANGE');
 
   double _ltc = cripto;
-  ltcController.text = (_ltc * btc / ltc).toStringAsFixed(6);
-  adaController.text = (_ltc * btc / ada).toStringAsFixed(6);
-  uniController.text = (_ltc * btc / uni).toStringAsFixed(6);
-  usdcController.text = (_ltc * btc / usdc).toStringAsFixed(6);
-  realController.text = (_ltc * btc).toStringAsFixed(2);
+  btcController.text = (_ltc * ltc / btc).toStringAsFixed(6);
+  adaController.text = (_ltc * ltc / ada).toStringAsFixed(6);
+  uniController.text = (_ltc * ltc / uni).toStringAsFixed(6);
+  usdcController.text = (_ltc * ltc / usdc).toStringAsFixed(6);
+  realController.text = (_ltc * ltc).toStringAsFixed(2);
 }
 
 void _adaChanged(double cripto) {
   print('ENTROU NO ADA CHANGE');
 
   double _ada = cripto;
-  ltcController.text = (_ada * btc / ltc).toStringAsFixed(6);
-  adaController.text = (_ada * btc / ada).toStringAsFixed(6);
-  uniController.text = (_ada * btc / uni).toStringAsFixed(6);
-  usdcController.text = (_ada * btc / usdc).toStringAsFixed(6);
-  realController.text = (_ada * btc).toStringAsFixed(2);
+  btcController.text = (_ada * ada / btc).toStringAsFixed(6);
+  ltcController.text = (_ada * ada / ltc).toStringAsFixed(6);
+  uniController.text = (_ada * ada / uni).toStringAsFixed(6);
+  usdcController.text = (_ada * ada / usdc).toStringAsFixed(6);
+  realController.text = (_ada * ada).toStringAsFixed(2);
 }
 
 void _uniChanged(double cripto) {
   print('ENTROU NO UNI CHANGE');
 
   double _uni = cripto;
-  ltcController.text = (_uni * btc / ltc).toStringAsFixed(6);
-  adaController.text = (_uni * btc / ada).toStringAsFixed(6);
-  uniController.text = (_uni * btc / uni).toStringAsFixed(6);
-  usdcController.text = (_uni * btc / usdc).toStringAsFixed(6);
-  realController.text = (_uni * btc).toStringAsFixed(2);
+  btcController.text = (_uni * uni / btc).toStringAsFixed(6);
+  ltcController.text = (_uni * uni / ltc).toStringAsFixed(6);
+  adaController.text = (_uni * uni / ada).toStringAsFixed(6);
+  usdcController.text = (_uni * uni / usdc).toStringAsFixed(6);
+  realController.text = (_uni * uni).toStringAsFixed(2);
 }
 
 void _usdcChanged(double cripto) {
   print('ENTROU NO USDC CHANGE');
 
   double _usdc = cripto;
-  ltcController.text = (_usdc * btc / ltc).toStringAsFixed(6);
-  adaController.text = (_usdc * btc / ada).toStringAsFixed(6);
-  uniController.text = (_usdc * btc / uni).toStringAsFixed(6);
-  usdcController.text = (_usdc * btc / usdc).toStringAsFixed(6);
-  realController.text = (_usdc * btc).toStringAsFixed(2);
+  btcController.text = (_usdc * usdc / btc).toStringAsFixed(6);
+  ltcController.text = (_usdc * usdc / ltc).toStringAsFixed(6);
+  adaController.text = (_usdc * usdc / ada).toStringAsFixed(6);
+  uniController.text = (_usdc * usdc / uni).toStringAsFixed(6);
+  realController.text = (_usdc * usdc).toStringAsFixed(2);
 }
 
 void _clearAll() {
@@ -299,8 +344,7 @@ Widget circularLoading() {
   );
 }
 
-Widget buildTextField_reais(
-    String label, String prefix, TextEditingController c) {
+Widget buildTextField(String label, String prefix, TextEditingController c) {
   return TextField(
     controller: c,
     decoration: InputDecoration(
@@ -312,96 +356,6 @@ Widget buildTextField_reais(
         color: Colors.amber,
         fontSize: 25.0,
       ),
-    ),
-    style: TextStyle(
-      color: Colors.amber,
-      fontSize: 25.0,
-    ),
-    keyboardType: TextInputType.number,
-  );
-}
-
-Widget buildTextField_btc(
-    String label, String prefix, TextEditingController c) {
-  return TextField(
-    controller: c,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
-    ),
-    style: TextStyle(
-      color: Colors.amber,
-      fontSize: 25.0,
-    ),
-    keyboardType: TextInputType.number,
-  );
-}
-
-Widget buildTextField_ltc(
-    String label, String prefix, TextEditingController c) {
-  return TextField(
-    controller: c,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
-    ),
-    style: TextStyle(
-      color: Colors.amber,
-      fontSize: 25.0,
-    ),
-    keyboardType: TextInputType.number,
-  );
-}
-
-Widget buildTextField_ada(
-    String label, String prefix, TextEditingController c) {
-  return TextField(
-    controller: c,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
-    ),
-    style: TextStyle(
-      color: Colors.amber,
-      fontSize: 25.0,
-    ),
-    keyboardType: TextInputType.number,
-  );
-}
-
-Widget buildTextField_uni(
-    String label, String prefix, TextEditingController c) {
-  return TextField(
-    controller: c,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
-    ),
-    style: TextStyle(
-      color: Colors.amber,
-      fontSize: 25.0,
-    ),
-    keyboardType: TextInputType.number,
-  );
-}
-
-Widget buildTextField_usdc(
-    String label, String prefix, TextEditingController c) {
-  return TextField(
-    controller: c,
-    decoration: InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
     ),
     style: TextStyle(
       color: Colors.amber,

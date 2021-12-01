@@ -1,5 +1,13 @@
+// ignore_for_file: prefer_const_constructors, duplicate_ignore, avoid_print, unused_import, avoid_web_libraries_in_flutter
+
+import 'dart:js';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:conversor_moedas_flutter/models/variaveis.dart';
+import 'package:conversor_moedas_flutter/notifications/flushBar_notifications.dart';
 import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 Future getData() async {
   // Requisições Via Service
@@ -106,6 +114,9 @@ Future getData() async {
       S_reais!.isNotEmpty) {
     _realChanged(D_reais);
   } else {
+    titleSnackBar = 'Atenção!';
+    massageSnackBar = 'Limpando campos para nova conversão.';
+    showTopSnackBar(context);
     _clearAll();
   }
 }

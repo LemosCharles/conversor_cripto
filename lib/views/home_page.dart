@@ -2,6 +2,7 @@
 
 import 'package:conversor_moedas_flutter/models/result_cripto.dart';
 import 'package:conversor_moedas_flutter/models/variaveis.dart';
+import 'package:conversor_moedas_flutter/notifications/flushBar_notifications.dart';
 import 'package:conversor_moedas_flutter/services/get_data.dart';
 import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
 import 'package:conversor_moedas_flutter/widgets/botton_converter.dart';
@@ -55,4 +56,12 @@ class _HomePageState extends State<HomePage> {
               ],
             )));
   }
+}
+
+void _share(BuildContext context) {
+  dynamic cep;
+
+  titleSnackBar = 'Atenção!';
+  massageSnackBar = 'Não é possível compartilhar um CEP inválido.';
+  showTopSnackBar(context);
 }

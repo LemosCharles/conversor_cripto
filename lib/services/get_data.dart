@@ -114,9 +114,9 @@ Future getData() async {
       S_reais!.isNotEmpty) {
     _realChanged(D_reais);
   } else {
-    titleSnackBar = 'Atenção!';
-    massageSnackBar = 'Limpando campos para nova conversão.';
-    showTopSnackBar(context);
+    //titleSnackBar = 'Atenção!';
+    //massageSnackBar = 'Limpando campos para nova conversão.';
+    //showTopSnackBar('sssssds');
     _clearAll();
   }
 }

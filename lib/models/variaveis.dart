@@ -1,6 +1,7 @@
 // Auxiliares de calculo
 // ignore_for_file: unused_element, non_constant_identifier_names, prefer_typing_uninitialized_variables
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 
 double btc = 0;
@@ -45,3 +46,8 @@ final realController = TextEditingController();
 
 // Auxiliar via api
 var resultCripto;
+
+// Fush Bar
+var titleSnackBar = '';
+var massageSnackBar = '';
+final List<Flushbar> flushBars = [];

@@ -2,7 +2,7 @@
 // ignore: file_names
 // ignore: file_names
 
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, duplicate_ignore, file_names, avoid_print
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:conversor_moedas_flutter/models/variaveis.dart';

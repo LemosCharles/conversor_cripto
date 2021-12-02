@@ -8,12 +8,12 @@ Widget buildTextField(String label, String prefix, TextEditingController c) {
     controller: c,
     decoration: InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: Colors.amber),
+      labelStyle: TextStyle(color: Colors.black26),
       border: OutlineInputBorder(),
       prefixText: prefix,
       prefixStyle: TextStyle(
-        color: Colors.amber,
-        fontSize: 25.0,
+        color: Colors.black45,
+        fontSize: 20.0,
       ),
     ),
     style: TextStyle(

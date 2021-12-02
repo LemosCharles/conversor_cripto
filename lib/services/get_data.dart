@@ -1,15 +1,15 @@
-// ignore_for_file: prefer_const_constructors, duplicate_ignore, avoid_print, unused_import, avoid_web_libraries_in_flutter
-
-import 'dart:js';
+// ignore_for_file: prefer_const_constructors, duplicate_ignore, avoid_print, unused_import, avoid_web_libraries_in_flutter, curly_braces_in_flow_control_structures, unrelated_type_equality_checks, unused_label, unused_local_variable
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:conversor_moedas_flutter/models/variaveis.dart';
 import 'package:conversor_moedas_flutter/notifications/flushBar_notifications.dart';
+import 'package:conversor_moedas_flutter/notifications/validator_caracter.dart';
 import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-Future getData() async {
+Future getData(BuildContext context) async {
   // Requisições Via Service
   resultCripto = await ViaCriptoService.fetchCripto('BTC');
   Btc_last = resultCripto.ticker.last;
@@ -22,6 +22,7 @@ Future getData() async {
   resultCripto = await ViaCriptoService.fetchCripto('USDC');
   Usdc_last = resultCripto.ticker.buy;
 
+  // Recebe controllers para posterior validação
   S_btc = btcController.text;
   S_ltc = ltcController.text;
   S_ada = adaController.text;
@@ -29,97 +30,117 @@ Future getData() async {
   S_usdc = usdcController.text;
   S_reais = realController.text;
 
-  btc = double.parse('$Btc_last');
-  ltc = double.parse('$Ltc_last');
-  ada = double.parse('$Ada_last');
-  uni = double.parse('$Uni_last');
-  usdc = double.parse('$Usdc_last');
-
-  if (S_reais!.isEmpty) {
-    D_reais = 0;
-  } else {
-    D_reais = double.parse('$S_reais');
-  }
-
-  if (S_btc!.isEmpty) {
-    D_btc = 0;
-  } else {
-    D_btc = double.parse('$S_btc');
-  }
-
-  if (S_ltc!.isEmpty) {
-    D_ltc = 0;
-  } else {
-    D_ltc = double.parse('$S_ltc');
-  }
-
-  if (S_uni!.isEmpty) {
-    D_uni = 0;
-  } else {
-    D_uni = double.parse('$S_uni');
-  }
-
-  if (S_ada!.isEmpty) {
-    D_ada = 0;
-  } else {
-    D_ada = double.parse('$S_ada');
-  }
-
-  if (S_usdc!.isEmpty) {
-    D_usdc = 0;
-  } else {
-    D_usdc = double.parse('$S_usdc');
-  }
-
-  if (S_btc!.isNotEmpty &&
-      S_ltc!.isEmpty &&
-      S_ada!.isEmpty &&
-      S_uni!.isEmpty &&
-      S_usdc!.isEmpty &&
-      S_reais!.isEmpty) {
-    _btcChanged(D_btc);
-  } else if (S_btc!.isEmpty &&
-      S_ltc!.isNotEmpty &&
-      S_ada!.isEmpty &&
-      S_uni!.isEmpty &&
-      S_usdc!.isEmpty &&
-      S_reais!.isEmpty) {
-    _ltcChanged(D_ltc);
-  } else if (S_btc!.isEmpty &&
-      S_ltc!.isEmpty &&
-      S_ada!.isNotEmpty &&
-      S_uni!.isEmpty &&
-      S_usdc!.isEmpty &&
-      S_reais!.isEmpty) {
-    _adaChanged(D_ada);
-  } else if (S_btc!.isEmpty &&
-      S_ltc!.isEmpty &&
-      S_ada!.isEmpty &&
-      S_uni!.isNotEmpty &&
-      S_usdc!.isEmpty &&
-      S_reais!.isEmpty) {
-    _uniChanged(D_uni);
-  } else if (S_btc!.isEmpty &&
-      S_ltc!.isEmpty &&
-      S_ada!.isEmpty &&
-      S_uni!.isEmpty &&
-      S_usdc!.isNotEmpty &&
-      S_reais!.isEmpty) {
-    _usdcChanged(D_usdc);
-  } else if (S_btc!.isEmpty &&
-      S_ltc!.isEmpty &&
-      S_ada!.isEmpty &&
-      S_uni!.isEmpty &&
-      S_usdc!.isEmpty &&
-      S_reais!.isNotEmpty) {
-    _realChanged(D_reais);
-  } else {
-    //titleSnackBar = 'Atenção!';
-    //massageSnackBar = 'Limpando campos para nova conversão.';
-    //showTopSnackBar('sssssds');
+  if (digitacaoIncorreta()) {
+    titleSnackBar = 'Caracter incorreto!';
+    massageSnackBar = 'Favor, revise sua digitação.';
+    showTopSnackBar(context);
     _clearAll();
+  } else {
+    if (S_reais!.isEmpty &&
+        S_btc!.isEmpty &&
+        S_ltc!.isEmpty &&
+        S_uni!.isEmpty &&
+        S_ada!.isEmpty &&
+        S_usdc!.isEmpty) {
+      titleSnackBar = 'Campos em branco!';
+      massageSnackBar = 'Favor, informe um valor para conversão.';
+      showTopSnackBar(context);
+    } else {
+// Conversão das requisições via API para double
+      btc = double.parse('$Btc_last');
+      ltc = double.parse('$Ltc_last');
+      ada = double.parse('$Ada_last');
+      uni = double.parse('$Uni_last');
+      usdc = double.parse('$Usdc_last');
+
+      // Validações pré calculo de conversão
+      if (S_reais!.isEmpty) {
+        D_reais = 0;
+      } else {
+        D_reais = double.parse('$S_reais');
+      }
+
+      if (S_btc!.isEmpty) {
+        D_btc = 0;
+      } else {
+        D_btc = double.parse('$S_btc');
+      }
+
+      if (S_ltc!.isEmpty) {
+        D_ltc = 0;
+      } else {
+        D_ltc = double.parse('$S_ltc');
+      }
+
+      if (S_uni!.isEmpty) {
+        D_uni = 0;
+      } else {
+        D_uni = double.parse('$S_uni');
+      }
+
+      if (S_ada!.isEmpty) {
+        D_ada = 0;
+      } else {
+        D_ada = double.parse('$S_ada');
+      }
+
+      if (S_usdc!.isEmpty) {
+        D_usdc = 0;
+      } else {
+        D_usdc = double.parse('$S_usdc');
+      }
+
+      // Valida qual calculo de conversão irá fazer
+      if (S_btc!.isNotEmpty &&
+          S_ltc!.isEmpty &&
+          S_ada!.isEmpty &&
+          S_uni!.isEmpty &&
+          S_usdc!.isEmpty &&
+          S_reais!.isEmpty) {
+        _btcChanged(D_btc);
+      } else if (S_btc!.isEmpty &&
+          S_ltc!.isNotEmpty &&
+          S_ada!.isEmpty &&
+          S_uni!.isEmpty &&
+          S_usdc!.isEmpty &&
+          S_reais!.isEmpty) {
+        _ltcChanged(D_ltc);
+      } else if (S_btc!.isEmpty &&
+          S_ltc!.isEmpty &&
+          S_ada!.isNotEmpty &&
+          S_uni!.isEmpty &&
+          S_usdc!.isEmpty &&
+          S_reais!.isEmpty) {
+        _adaChanged(D_ada);
+      } else if (S_btc!.isEmpty &&
+          S_ltc!.isEmpty &&
+          S_ada!.isEmpty &&
+          S_uni!.isNotEmpty &&
+          S_usdc!.isEmpty &&
+          S_reais!.isEmpty) {
+        _uniChanged(D_uni);
+      } else if (S_btc!.isEmpty &&
+          S_ltc!.isEmpty &&
+          S_ada!.isEmpty &&
+          S_uni!.isEmpty &&
+          S_usdc!.isNotEmpty &&
+          S_reais!.isEmpty) {
+        _usdcChanged(D_usdc);
+      } else if (S_btc!.isEmpty &&
+          S_ltc!.isEmpty &&
+          S_ada!.isEmpty &&
+          S_uni!.isEmpty &&
+          S_usdc!.isEmpty &&
+          S_reais!.isNotEmpty) {
+        _realChanged(D_reais);
+      } else {
+        _clearAll();
+      }
+    }
   }
 }
+
+// SESSÃO DE CALCULOS
 
 void _realChanged(double valor) {
   double _real = valor;

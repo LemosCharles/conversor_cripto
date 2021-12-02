@@ -9,6 +9,14 @@ import 'package:conversor_moedas_flutter/models/variaveis.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+Future show(BuildContext context, Flushbar newFlushBar) async {
+  await Future.wait(flushBars.map((flushBar) => flushBar.dismiss()).toList());
+  flushBars.clear();
+
+  newFlushBar.show(context);
+  flushBars.add(newFlushBar);
+}
+
 void showTopSnackBar(BuildContext context) => show(
       context,
       Flushbar(
@@ -29,14 +37,7 @@ void showTopSnackBar(BuildContext context) => show(
         duration: Duration(seconds: 3),
         flushbarPosition: FlushbarPosition.TOP,
         margin: EdgeInsets.fromLTRB(8, kToolbarHeight + 8, 8, 0),
+        borderRadius: BorderRadius.circular(10),
         //borderRadius: 16,
       ),
     );
-
-Future show(BuildContext context, Flushbar newFlushBar) async {
-  await Future.wait(flushBars.map((flushBar) => flushBar.dismiss()).toList());
-  flushBars.clear();
-
-  newFlushBar.show(context);
-  flushBars.add(newFlushBar);
-}

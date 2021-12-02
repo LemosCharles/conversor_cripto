@@ -3,16 +3,19 @@
 import 'package:conversor_moedas_flutter/models/result_cripto.dart';
 import 'package:conversor_moedas_flutter/models/variaveis.dart';
 import 'package:conversor_moedas_flutter/notifications/flushBar_notifications.dart';
+import 'package:conversor_moedas_flutter/notifications/validator_caracter.dart';
 import 'package:conversor_moedas_flutter/services/get_data.dart';
 import 'package:conversor_moedas_flutter/services/via_cripto_service.dart';
-import 'package:conversor_moedas_flutter/widgets/botton_converter.dart';
-import 'package:conversor_moedas_flutter/widgets/botton_limpar.dart';
+import 'package:conversor_moedas_flutter/share/share.dart';
+import 'package:conversor_moedas_flutter/widgets/icons_buttons.dart';
 import 'package:conversor_moedas_flutter/widgets/text_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+
+import 'package:share/share.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,21 +27,26 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'CONVERSOR DE CRIPTOS',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          title: Text('CONVERSOR CRIPTOS'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.share,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                getShare(context);
+              },
+            )
+          ],
         ),
-        //getData(),
         body: SingleChildScrollView(
             padding: EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                buildTextField("Valor (R\$)", "R\$ ", realController),
+                Divider(),
+                buildTextField("BRL", "R\$ ", realController),
                 Divider(),
                 buildTextField("Bitcoin", "Quantidade = ", btcController),
                 Divider(),
@@ -49,19 +57,8 @@ class _HomePageState extends State<HomePage> {
                 buildTextField("UniSwap", "Quantidade = ", uniController),
                 Divider(),
                 buildTextField("UsdCoion", "Quantidade = ", usdcController),
-                // Botões
-                buildSearchCriptoButton(),
-                buildButtonLimparCampos(),
-                Divider(),
+                buildAcoes(context),
               ],
             )));
   }
-}
-
-void _share(BuildContext context) {
-  dynamic cep;
-
-  titleSnackBar = 'Atenção!';
-  massageSnackBar = 'Não é possível compartilhar um CEP inválido.';
-  showTopSnackBar(context);
 }

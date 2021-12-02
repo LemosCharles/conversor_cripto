@@ -10,6 +10,7 @@ double ada = 0;
 double uni = 0;
 double usdc = 0;
 double reais = 0;
+double D_aux = 0;
 double D_btc = 0;
 double D_ltc = 0;
 double D_ada = 0;
@@ -35,6 +36,7 @@ String? S_reais = '';
 bool _erro = true;
 bool _loading = false;
 bool _enableField = true;
+bool _caracterCorreto = false;
 
 // Controllers
 final btcController = TextEditingController();

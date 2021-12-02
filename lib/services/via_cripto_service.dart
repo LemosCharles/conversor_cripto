@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'dart:core';
-import 'dart:ffi';
 
 import 'package:conversor_moedas_flutter/models/result_cripto.dart';
 import 'package:http/http.dart' as http;
